@@ -1,11 +1,20 @@
-const { app, BrowserWindow, shell, ipcMain, Menu } = require('electron');
+const { app, BrowserWindow, shell, ipcMain, Menu, session } = require('electron');
 const fs = require('node:fs');
 const path = require('node:path');
 
 const ROOT = path.resolve(__dirname, '..');
 const CONFIG_PATH = path.join(ROOT, 'usage-sources.json');
 const DEFAULT_REFRESH_MS = 60_000;
+const USAGE_PARTITION = 'persist:ai-usage-monitor';
 const childWindows = new Map();
+
+// Google blocks OAuth from user agents containing "Electron"; strip the app and
+// Electron tokens so usage windows present themselves as a plain Chrome browser.
+function chromeUserAgent(rawUA) {
+  return rawUA
+    .replace(/\sElectron\/[\d.]+/i, '')
+    .replace(/\s[^\s/]+\/[\d.]+(?=\sChrome\/)/i, '');
+}
 
 function loadConfig() {
   const raw = fs.readFileSync(CONFIG_PATH, 'utf8');
@@ -71,14 +80,27 @@ function createUsageWindow(source) {
       contextIsolation: true,
       nodeIntegration: false,
       sandbox: true,
-      partition: 'persist:ai-usage-monitor',
+      partition: USAGE_PARTITION,
     },
   });
 
-  win.webContents.setWindowOpenHandler(({ url }) => {
-    shell.openExternal(url);
-    return { action: 'deny' };
-  });
+  // Keep OAuth/login popups (e.g. "Continue with Google") inside the app's
+  // persistent session. Shelling out to an external browser fails on WSL/headless
+  // setups and would break the login handshake anyway.
+  win.webContents.setWindowOpenHandler(() => ({
+    action: 'allow',
+    overrideBrowserWindowOptions: {
+      autoHideMenuBar: true,
+      width: 520,
+      height: 680,
+      webPreferences: {
+        contextIsolation: true,
+        nodeIntegration: false,
+        sandbox: true,
+        partition: USAGE_PARTITION,
+      },
+    },
+  }));
 
   win.on('closed', () => childWindows.delete(source.id));
   childWindows.set(source.id, win);
@@ -180,6 +202,8 @@ ipcMain.handle('app:openConfig', () => shell.openPath(CONFIG_PATH));
 
 app.whenReady().then(() => {
   Menu.setApplicationMenu(null);
+  const usageSession = session.fromPartition(USAGE_PARTITION);
+  usageSession.setUserAgent(chromeUserAgent(usageSession.getUserAgent()));
   createMainWindow();
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createMainWindow();
