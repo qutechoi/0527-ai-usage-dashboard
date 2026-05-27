@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AI Usage Monitor</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Always-on-top</p>
+          <h1>AI Usage Monitor</h1>
+        </div>
+        <button id="pinButton" class="ghost" title="Always on top 토글">📌</button>
+      </header>
+
+      <section class="controls">
+        <button id="refreshAllButton" class="primary">전체 새로고침</button>
+        <button id="configButton" class="secondary">설정 열기</button>
+      </section>
+
+      <p id="statusLine" class="status">초기화 중...</p>
+      <section id="cards" class="cards" aria-live="polite"></section>
+
+      <footer>
+        <p>각 서비스 창에서 로그인하면 같은 Electron 세션으로 유지됩니다.</p>
+        <p>페이지 구조가 바뀌면 <code>usage-sources.json</code>의 패턴을 조정하세요.</p>
+      </footer>
+    </main>
+    <script src="./renderer.js"></script>
+  </body>
+</html>

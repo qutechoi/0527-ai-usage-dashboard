@@ -1,0 +1,28 @@
+{
+  "name": "0527-ai-usage-dashboard",
+  "version": "0.1.0",
+  "description": "Always-on-top desktop mini dashboard for Claude, OpenAI/GPT, and Gemini usage pages",
+  "main": "src/main.js",
+  "scripts": {
+    "test": "npm run check && npm run validate && npm run smoke",
+    "start": "electron .",
+    "check": "node --check src/main.js && node --check src/preload.js && node --check src/renderer.js && node --check scripts/validate-config.js && node --check scripts/smoke.js",
+    "validate": "node scripts/validate-config.js",
+    "smoke": "node scripts/smoke.js"
+  },
+  "keywords": [
+    "ai",
+    "usage",
+    "dashboard",
+    "electron",
+    "claude",
+    "gemini",
+    "openai"
+  ],
+  "author": "Hermes Agent",
+  "license": "MIT",
+  "type": "commonjs",
+  "devDependencies": {
+    "electron": "^42.3.0"
+  }
+}

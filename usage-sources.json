@@ -1,0 +1,46 @@
+{
+  "refreshIntervalMs": 60000,
+  "window": {
+    "width": 380,
+    "height": 620,
+    "alwaysOnTop": true
+  },
+  "sources": [
+    {
+      "id": "claude",
+      "label": "Claude",
+      "url": "https://claude.ai/settings/usage",
+      "accent": "#d97757",
+      "patterns": [
+        "remaining[^\\n]{0,80}",
+        "usage[^\\n]{0,120}",
+        "limit[^\\n]{0,120}",
+        "resets?[^\\n]{0,120}"
+      ]
+    },
+    {
+      "id": "openai",
+      "label": "GPT / OpenAI",
+      "url": "https://platform.openai.com/usage",
+      "accent": "#10a37f",
+      "patterns": [
+        "usage[^\\n]{0,120}",
+        "cost[^\\n]{0,120}",
+        "budget[^\\n]{0,120}",
+        "tokens?[^\\n]{0,120}"
+      ]
+    },
+    {
+      "id": "gemini",
+      "label": "Gemini",
+      "url": "https://gemini.google.com/usage",
+      "accent": "#8ab4f8",
+      "patterns": [
+        "usage[^\\n]{0,120}",
+        "remaining[^\\n]{0,120}",
+        "limit[^\\n]{0,120}",
+        "resets?[^\\n]{0,120}"
+      ]
+    }
+  ]
+}
